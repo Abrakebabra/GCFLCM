@@ -30,9 +30,9 @@ func restartProgram(){
             print("------------------------------------")
             print("------------------------------------")
             print("\nFactorise me.")
-            choice = false
             integerList = []
             primesOfInputs = []
+            choice = false
             break
             
         } else if choiceInput == "n" {
@@ -59,8 +59,9 @@ func inputHandler() -> Int {
         
         if let strInput: String = userInput, let intInput: Int = Int(strInput) {
             
-            if intInput == 0 {
+            if intInput == 0 || intInput == 1{
                 print("Not a valid number")
+                
             } else {
                 inputAccepted = true
                 return abs(intInput)
@@ -69,8 +70,14 @@ func inputHandler() -> Int {
         } else {
             
             if userInput == "end" {
-                inputAccepted = true
-                return 0
+                
+                if integerList.count < 1 {
+                    print("Needs at least one valid input")
+                    
+                } else {
+                    inputAccepted = true
+                    return 0
+                }
                 
             } else {
                 print("Not a valid number")
@@ -83,6 +90,7 @@ func inputHandler() -> Int {
 //  handles the entry of multiple numbers until 0 is returned from "end"
 func inputAllNumbers() {
     var finishedInput: Bool = false
+    print("Input \"end\" when finished")
     
     while finishedInput == false {
         let input: Int = inputHandler()
@@ -106,6 +114,7 @@ func gcfFind(first: Int, second: Int) -> Int {
     if first > second {
         a = first
         b = second
+        
     } else {
         a = second
         b = first
@@ -116,7 +125,6 @@ func gcfFind(first: Int, second: Int) -> Int {
     }
     
     let r: Int = a % b
-
     return gcfFind(first: b, second: r)
 }
 
@@ -129,6 +137,7 @@ func lcmFind(first: Int, second: Int, gcf: Int) -> [Int] {
     if first > second {
         a = first
         b = second
+        
     } else {
         a = second
         b = first
@@ -202,6 +211,9 @@ func findPrimeFactors(num: Int) -> [Int] {
 }
 
 
+//  Adds some blank space at the top.
+print("")
+
 while run == true {
     inputAllNumbers()
     
@@ -227,8 +239,14 @@ while run == true {
     
     print("")
     print("Lowest Common Multiple:  \(lcm)")
-    print("Greatest Common Factor:  \(gcf)")
-    print("Common Prime Factors:    \(lcmPrimes)")
+    
+    if gcf == 1 {
+        print("No common factors")
+    } else {
+        print("Greatest Common Factor:  \(gcf)")
+        print("Common Prime Factors:    \(lcmPrimes)")
+    }
+    
     print("------------------------------------")
     
     restartProgram()
