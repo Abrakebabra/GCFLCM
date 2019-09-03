@@ -5,7 +5,7 @@
 //  Created by Keith Lee on 2019/08/29.
 //  Copyright © 2019 Keith Lee. All rights reserved.
 //
-
+//  109381081209419241
 import Foundation
 
 
@@ -157,11 +157,16 @@ func gcflcmAllNumbers(allNumbers: [Int]) -> [Int] {
     var newLCM: [Int] = [allNumbers[0], allNumbers[0]]
     var newGCF: Int = allNumbers[0]
     
-    for i in allNumbers {
-        newGCF = gcfFind(first: newGCF, second: i)
-        newLCM = lcmFind(first: newLCM[0], second: i,
-                         gcf: gcfFind(first: newLCM[0], second: i))
+    if allNumbers.count > 1 {
+        
+        for i in allNumbers {
+            newGCF = gcfFind(first: newGCF, second: i)
+            newLCM = lcmFind(first: newLCM[0], second: i,
+                             gcf: gcfFind(first: newLCM[0], second: i))
+        }
     }
+    
+    
     return [newGCF, newLCM[0]]
 }
 
@@ -217,6 +222,9 @@ print("")
 while run == true {
     inputAllNumbers()
     
+    //  get start time of calculations
+    let startTime: Double = CFAbsoluteTimeGetCurrent()
+    
     //  find all prime factors of all inputs
     for i in integerList {
         let primeOutput: [Int] = findPrimeFactors(num: i)
@@ -230,6 +238,9 @@ while run == true {
     
     //  find all prime factors of the lcm
     let lcmPrimes = findPrimeFactors(num: gcf)
+    
+    let endTime: Double = CFAbsoluteTimeGetCurrent()
+    
     
     //  display
     for i in 0..<integerList.count {
@@ -246,7 +257,7 @@ while run == true {
         print("Greatest Common Factor:  \(gcf)")
         print("Common Prime Factors:    \(lcmPrimes)")
     }
-    
+    print("\nCalculated in \(Float(endTime - startTime)) seconds")
     print("------------------------------------")
     
     restartProgram()
