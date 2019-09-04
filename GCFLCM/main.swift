@@ -5,9 +5,9 @@
 //  Created by Keith Lee on 2019/08/29.
 //  Copyright © 2019 Keith Lee. All rights reserved.
 //
-//  109381081209419241
-import Foundation
+//  Big prime to test with:  109381081209419241
 
+import Foundation
 
 var integerList: [Int] = []
 var primesOfInputs: [[Int]] = []
@@ -165,8 +165,6 @@ func gcflcmAllNumbers(allNumbers: [Int]) -> [Int] {
                              gcf: gcfFind(first: newLCM[0], second: i))
         }
     }
-    
-    
     return [newGCF, newLCM[0]]
 }
 
