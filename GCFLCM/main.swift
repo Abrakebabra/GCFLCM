@@ -17,6 +17,10 @@ var lcm: Int
 
 var run: Bool = true
 
+enum error: Error {
+    case intOverflow
+}
+
 
 //  handles re-entry of new inputs.  Clears data and handles user choices.
 func restartProgram(){
@@ -130,20 +134,15 @@ func gcfFind(first: Int, second: Int) -> Int {
 
 
 //  finds the LCM
-func lcmFind(first: Int, second: Int, gcf: Int) -> [Int] {
-    var a: Int
-    var b: Int
+func lcmFind(first: Int, second: Int, gcf: Int) throws -> Int {
     
-    if first > second {
-        a = first
-        b = second
-        
-    } else {
-        a = second
-        b = first
+    let int64overflow = first.multipliedReportingOverflow(by: second)
+    
+    guard int64overflow.overflow == false else {
+        throw error.intOverflow
     }
     
-    return [((a * b) / gcf), gcf]
+    return ((first * second) / gcf)
 }
 
 
@@ -151,21 +150,27 @@ func lcmFind(first: Int, second: Int, gcf: Int) -> [Int] {
 //  Returns 2 integers.
 //  newLCM holds both the current known LCM and
 //  the GCF between the previous LCM and the next number to test.
-//  Only the LCM is returned (newLCM[0])
-//  and the GCF (newLCM[1]) is only a working number.
+//  Only the LCM is returned (newLCM)
 func gcflcmAllNumbers(allNumbers: [Int]) -> [Int] {
-    var newLCM: [Int] = [allNumbers[0], allNumbers[0]]
+    var newLCM: Int = allNumbers[0]
     var newGCF: Int = allNumbers[0]
     
     if allNumbers.count > 1 {
         
         for i in allNumbers {
             newGCF = gcfFind(first: newGCF, second: i)
-            newLCM = lcmFind(first: newLCM[0], second: i,
-                             gcf: gcfFind(first: newLCM[0], second: i))
+            
+            do {
+                try newLCM = lcmFind(first: newLCM, second: i, gcf: newGCF)
+            } catch error.intOverflow {
+                newLCM = -1
+            } catch {
+                print("Unexpected Error")
+            }
+            
         }
     }
-    return [newGCF, newLCM[0]]
+    return [newGCF, newLCM]
 }
 
 
@@ -214,6 +219,36 @@ func findPrimeFactors(num: Int) -> [Int] {
 }
 
 
+func commaSeparate(input: Int) -> String {
+    // Takes an integer, formats it to a string with commas every 3 digits
+    // Convert to decimal otherwise numbers like 11,111,111,111,111,111 are altered.
+    // Reasoning: https://stackoverflow.com/questions/45520019/numberformatter-issue-for-large-number
+    // formatter uses double arithmetic which uses around 16-17 characters at most which can produce different results.
+    let inputDecimal : Decimal = Decimal(input)
+    let numberFormatter = NumberFormatter()
+    numberFormatter.numberStyle = .decimal
+    let formatted : String? = numberFormatter.string(for: inputDecimal)
+    
+    if let formattedString : String = formatted {
+        return formattedString
+    } else {
+        return ""
+    }
+}
+
+
+func commaSeparateArray(input: [Int]) -> String {
+    var allNumbers: String = ""
+    
+    for i in input {
+        let formatted = commaSeparate(input: i)
+        allNumbers.append("\(formatted)  |  ")
+    }
+    allNumbers.removeLast(3)
+    return allNumbers
+}
+
+
 //  Adds some blank space at the top.
 print("")
 
@@ -242,18 +277,23 @@ while run == true {
     
     //  display
     for i in 0..<integerList.count {
-        print("Input:          \(integerList[i])")
-        print("Prime Factors:  \(primesOfInputs[i])\n")
+        print("Input:          \(commaSeparate(input: (integerList[i])))")
+        print("Prime Factors:  \(commaSeparateArray(input: (primesOfInputs[i])))\n")
     }
     
-    print("")
-    print("Lowest Common Multiple:  \(lcm)")
+    // Notify overflow Int error
+    if lcm > 0 {
+        print("\nLowest Common Multiple:  \(commaSeparate(input: (lcm)))")
+    } else {
+        print("\nError:  LCM is larger than max integer size of \(commaSeparate(input: (Int.max)))")
+    }
+    
     
     if gcf == 1 {
         print("No common factors")
     } else {
-        print("Greatest Common Factor:  \(gcf)")
-        print("Common Prime Factors:    \(lcmPrimes)")
+        print("Greatest Common Factor:  \(commaSeparate(input: (gcf)))")
+        print("Common Prime Factors:    \(commaSeparateArray(input: (lcmPrimes)))")
     }
     print("\nCalculated in \(Float(endTime - startTime)) seconds")
     print("------------------------------------")
